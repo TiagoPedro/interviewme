@@ -1,26 +1,23 @@
 package pt.iscte.interviewme.remoteservices;
 
+import android.app.Activity;
+import android.app.Service;
+
 /**
  * Created by tiago on 27/02/2017.
  */
 
-abstract class RemoteService
+public interface RemoteService
 {
     // Variables
-    private boolean isActive;
+//    private boolean isActive;
 
     // Abstract methods
-    abstract boolean startService();
-    abstract boolean stopService();
+    void start();
+    void stop();
 
     // General methods
-    boolean getActiveStatus()
-    {
-        return isActive;
-    }
+    boolean getActiveStatus();
 
-    void setActiveStatus(boolean status)
-    {
-        isActive = status;
-    }
+    void setActiveStatus(boolean status);
 }

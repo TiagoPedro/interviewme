@@ -17,6 +17,14 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    splits {
+        abi {
+            enable true
+            reset()
+            include 'x86', 'armeabi-v7a', 'mips'
+            universalApk true
+        }
+    }
 }
 
 dependencies {
@@ -25,11 +33,10 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     compile 'com.android.support:appcompat-v7:25.2.0'
+    compile 'com.microsoft.projectoxford:speechrecognition:1.2.1'
     testCompile 'junit:junit:4.12'
 
-    compile 'com.ibm.watson.developer_cloud:java-sdk:3.0.1'
+//    compile 'com.ibm.watson.developer_cloud:java-sdk:3.0.1'
 
-    compile 'com.microsoft.projectoxford:speechrecognition:1.2.1'
-
-    compile('com.affectiva.android:affdexsdk:3.+')
+//    compile('com.affectiva.android:affdexsdk:3.+')
 }
