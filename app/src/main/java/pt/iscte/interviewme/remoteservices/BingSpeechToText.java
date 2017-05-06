@@ -19,6 +19,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 
 //import com.microsoft.bing.speech.Conversation;
 import com.microsoft.bing.speech.SpeechClientStatus;
@@ -35,28 +36,26 @@ import java.io.InputStream;
 
 public class BingSpeechToText extends Activity implements ISpeechRecognitionServerEvents, RemoteService
 {
-//    int m_waitSeconds;
-//    private DataRecognitionClient dataClient;
     private MicrophoneRecognitionClient micClient;
     private FinalResponseStatus isReceivedResponse;
     private String defaultLocale;
-//    private Activity hostActivity;
     EditText _logText;
+    private boolean activeStatus;
+    private SpeechRecognitionMode recMode;
 
-    public enum FinalResponseStatus { NotReceived, OK, Timeout }
+    private enum FinalResponseStatus { NotReceived, OK, Timeout }
 
     public BingSpeechToText()
     {
-//        m_waitSeconds = 0;
-//        dataClient = null;
         defaultLocale = "pt-PT";
-//        micClient = null;
         isReceivedResponse = FinalResponseStatus.NotReceived;
+        activeStatus = false;
+        recMode = SpeechRecognitionMode.ShortPhrase;
     }
 
     private String getPrimaryKey()
     {
-        return this.getString(R.string.primaryKey);
+        return this.getString(R.string.sttPrimaryKey);
     }
 
     private String getAuthenticationUri() {
@@ -90,7 +89,10 @@ public class BingSpeechToText extends Activity implements ISpeechRecognitionServ
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        this._logText = (EditText) findViewById(R.id.editText1);
+//        this._speechFeedback = (TextView) findViewById(R.id.speechFeedback);
+//        this._speechFeedback.setText("");
+//        this._speechFeedback.setVisibility(View.VISIBLE);
+        this._logText = (EditText) findViewById(R.id.speechFeedback);
         this._logText.setText("");
         this._logText.setVisibility(View.VISIBLE);
 
@@ -101,16 +103,14 @@ public class BingSpeechToText extends Activity implements ISpeechRecognitionServ
     @Override
     public void start()
     {
-//        this.LogRecognitionStart();
-
         if (micClient == null)
         {
             micClient = SpeechRecognitionServiceFactory.createMicrophoneClient(
                     this,
-                    SpeechRecognitionMode.ShortPhrase,
-                    defaultLocale,
+                    this.recMode,
+                    this.defaultLocale,
                     this,
-                    "1ffc1653019644f39cbf8f9fc3fd1005");
+                    this.getPrimaryKey());
 
             micClient.setAuthenticationUri(this.getAuthenticationUri());
         }
@@ -120,19 +120,22 @@ public class BingSpeechToText extends Activity implements ISpeechRecognitionServ
     @Override
     public void stop()
     {
-
+        micClient = null;
+        defaultLocale = "";
+        activeStatus = false;
+        recMode = null;
     }
 
     @Override
     public boolean getActiveStatus()
     {
-        return false;
+        return activeStatus;
     }
 
     @Override
     public void setActiveStatus(boolean status)
     {
-
+        activeStatus = status;
     }
 
     @Override
@@ -213,6 +216,7 @@ public class BingSpeechToText extends Activity implements ISpeechRecognitionServ
     private void WriteLine(String text)
     {
         this._logText.append(text + "\n");
+//        this._speechFeedback.append(text + "\n");
 //        System.out.println(text);
     }
 
