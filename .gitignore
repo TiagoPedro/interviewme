@@ -1,9 +1,45 @@
-*.iml
-.gradle
+/app/src/main/java/pt/iscte/interviewme/CameraActivity.java
+/app/src/main/java/pt/iscte/interviewme/IManager.java
+/app/src/main/java/pt/iscte/interviewme/RecognizeActivity.java
+/app/src/main/java/pt/iscte/interviewme/ServiceManager.java
+/app/src/main/java/pt/iscte/interviewme/StatisticsModeler.java
+/app/src/main/java/pt/iscte/interviewme/helper
+/app/src/main/java/pt/iscte/interviewme/remoteservices/RemoteService.java
+
+
+#built application files
+*.apk
+*.ap_
+
+# files for the dex VM
+*.dex
+
+# Java class files
+*.class
+
+# generated files
+bin/
+gen/
+
+# Local configuration file (sdk path, etc)
 /local.properties
+
+# Windows thumbnail db
+Thumbs.db
+
+# OSX files
+.DS_Store
+
+# Eclipse project files
+.classpath
+.project
+
+# Android Studio
+*.iml
 /.idea/workspace.xml
 /.idea/libraries
-.DS_Store
+.gradle
 /build
-/captures
-.externalNativeBuild
+
+#NDK
+obj/
