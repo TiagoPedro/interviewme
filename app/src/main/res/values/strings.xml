@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">InterviewMe</string>
+
+    <string name="sttPrimaryKey">1ffc1653019644f39cbf8f9fc3fd1005</string>
+    <string name="emotionSubscriptionKey">5e17879f554944bfa0ea51ed3e8e56b8</string>
+    <string name="faceSubscriptionKey">8b8365c469244999b54894176f7cb9db</string>
+
+    <string name="add_subscription_key_tip_title">Subscription Key is Needed</string>
+    <string name="add_subscription_key_tip">Please put your subscription key to source file \"app/res/values/strings.xml\" to enable Face API calls.</string>
+
+    <string name="authenticationUri"></string>
+
+    <string name="take_photo">Take a Photo</string>
+    <string name="select_image_in_album">From Gallery</string>
+    <string name="action_settings">Settings</string>
+</resources>
