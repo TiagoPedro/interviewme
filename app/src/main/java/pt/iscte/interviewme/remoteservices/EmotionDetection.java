@@ -19,19 +19,18 @@ import com.microsoft.projectoxford.face.contract.Face;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 
 import pt.iscte.interviewme.R;
+import pt.iscte.interviewme.Synchronizer;
 
 
 public class EmotionDetection extends Observable
 {
     private EmotionServiceClient client;
-    private ArrayList<Bitmap> bmapList;
-    private List<RecognizeResult> emotionResultsList;
     private Context parentContext;
 
     public EmotionDetection(Context context)
@@ -39,52 +38,13 @@ public class EmotionDetection extends Observable
         parentContext = context;
         if (client == null)
             client = new EmotionServiceRestClient(parentContext.getString(R.string.emotionSubscriptionKey));
-
-        bmapList = new ArrayList<>();
-        emotionResultsList = null;
     }
 
-//    public void recognizeImageEmotion(Bitmap bmap, List<RecognizeResult> emotionResultsList)
-//    {
-//        ImageHelper.
-//
-//        String faceSubscriptionKey = parentContext.getString(R.string.faceSubscriptionKey);
-//        if (faceSubscriptionKey.equalsIgnoreCase("Please_add_the_face_subscription_key_here"))
-//        {
-//            System.out.println("No face subscription key detected.");
-//        }
-//        else
-//        {
-//            // Do emotion detection using face rectangles provided by Face API.
-//            try
-//            {
-//                if(Build.VERSION.SDK_INT >= 11)
-//                {
-//                    int corePoolSize = 60;
-//                    int maximumPoolSize = 80;
-//                    int keepAliveTime = 10;
-//
-//                    BlockingQueue<Runnable> workQueue = new LinkedBlockingQueue<Runnable>(maximumPoolSize);
-//                    Executor threadPoolExecutor = new ThreadPoolExecutor(corePoolSize, maximumPoolSize, keepAliveTime, TimeUnit.SECONDS, workQueue);
-//
-//                    new EmotionRecognitionRequest(bmap, emotionResultsList).executeOnExecutor(threadPoolExecutor);
-//                }
-//
-//                else
-//                    new EmotionRecognitionRequest(bmap, emotionResultsList).execute();
-////                new EmotionRecognitionRequest(bmap, emotionResultsList).execute();
-//            }
-//            catch (Exception e)
-//            {
-//                System.out.println("Error encountered. Exception is: " + e.toString());
-//            }
-//        }
-//        bmapList.add(bmap);
-//    }
-
-    public void recognizeImageEmotion(Uri imageUri, List<RecognizeResult> emotionResultsList) throws IOException
+    public void recognizeImageEmotion(Uri imageUri) throws IOException
     {
         Bitmap bmap = MediaStore.Images.Media.getBitmap(parentContext.getContentResolver(), imageUri);
+        File file = new File(imageUri.getPath());
+        file.delete();
         String faceSubscriptionKey = parentContext.getString(R.string.faceSubscriptionKey);
         if (faceSubscriptionKey.equalsIgnoreCase("Please_add_the_face_subscription_key_here"))
             System.out.println("No face subscription key detected.");
@@ -94,18 +54,16 @@ public class EmotionDetection extends Observable
             try
             {
                 if(Build.VERSION.SDK_INT >= 11)
-                    new EmotionRecognitionRequest(bmap, emotionResultsList).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                    new EmotionRecognitionRequest(bmap).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 else
-                    new EmotionRecognitionRequest(bmap, emotionResultsList).execute();
+                    new EmotionRecognitionRequest(bmap).execute();
             }
             catch (Exception e)
             {
                 System.out.println("Error encountered. Exception is: " + e.toString());
             }
         }
-        bmapList.add(bmap);
     }
-
 
     private List<RecognizeResult> processWithFaceRectangles(Bitmap bmap) throws EmotionServiceException, com.microsoft.projectoxford.face.rest.ClientException, IOException
     {
@@ -126,8 +84,6 @@ public class EmotionDetection extends Observable
         Log.d("emotion", String.format("Face detection is done. Elapsed time: %d ms", (System.currentTimeMillis() - timeMark)));
         if(faces.length == 0)
             Log.d("emotion", String.format("No faces :("));
-        else
-            Log.d("emotion", String.format("Faces length: %d", faces.length));
 
         if (faces != null)
         {
@@ -147,7 +103,7 @@ public class EmotionDetection extends Observable
             inputStream.reset();
 
             timeMark = System.currentTimeMillis();
-            Log.d("emotion", "Start emotion detection using Emotion API");
+//            Log.d("emotion", "Start emotion detection using Emotion API");
             // -----------------------------------------------------------------------
             // KEY SAMPLE CODE STARTS HERE
             // -----------------------------------------------------------------------
@@ -163,30 +119,16 @@ public class EmotionDetection extends Observable
         return result;
     }
 
-//    private void customNotifyObservers()
-//    {
-//        notifyObservers();
-//    }
-
     private class EmotionRecognitionRequest extends AsyncTask<String, String, List<RecognizeResult>>
     {
         private Exception e;
         private Bitmap bmap;
-        private List<RecognizeResult> emotionResultsList;
 
-        EmotionRecognitionRequest(Bitmap bmap, List<RecognizeResult> emotionResultsList)
+        EmotionRecognitionRequest(Bitmap bmap)
         {
             e = null;
             this.bmap = bmap;
-            this.emotionResultsList = emotionResultsList;
         }
-
-//        @Override
-//        protected void onPreExecute()
-//        {
-//            System.out.println("Pre executing");
-//            super.onPreExecute();
-//        }
 
         @Override
         protected List<RecognizeResult> doInBackground(String... args)
@@ -223,14 +165,8 @@ public class EmotionDetection extends Observable
                 }
                 else
                 {
-                    this.emotionResultsList = result;
-//                    if(EmotionDetection.this.hasChanged())
-//                    {
                     EmotionDetection.this.setChanged();
                     EmotionDetection.this.notifyObservers(result);
-//                        EmotionDetection.this.clearChanged();
-//                    customNotifyObservers();
-//                    }
                 }
             }
         }
